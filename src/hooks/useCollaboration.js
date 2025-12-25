@@ -215,20 +215,22 @@ export const useCollaboration = (roomId, params) => {
 
   // Cleanup on unmount
 // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      // Copy ref value to variable inside effect (React best practice)
-      const currentUserId = userId.current;
-      if (isActive) {
-        supabase
-          .from('room_users')
-          .delete()
-          .eq('room_id', roomId)
-          .eq('user_id', currentUserId)
-          .then(() => {});
-      }
-    };
-  }, [isActive, roomId]);
+// Cleanup on unmount
+useEffect(() => {
+  // Capture ref value at effect setup time (not in cleanup)
+  const currentUserId = userId.current;
+  
+  return () => {
+    if (isActive) {
+      supabase
+        .from('room_users')
+        .delete()
+        .eq('room_id', roomId)
+        .eq('user_id', currentUserId)
+        .then(() => {});
+    }
+  };
+}, [isActive, roomId]);
 
   return {
     isActive,
