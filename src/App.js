@@ -1775,10 +1775,17 @@ const {
 } = useSimulationResults();
 
 // Sync shared params to local when collaboration is active
+// Sync shared params to local when collaboration is active
+// Sync shared params to local when collaboration is active
 useEffect(() => {
   if (collaborationActive && sharedParams) {
-    setParams(sharedParams);
+    // Only update if params are actually different to avoid feedback loops
+    const paramsChanged = JSON.stringify(params) !== JSON.stringify(sharedParams);
+    if (paramsChanged) {
+      setParams(sharedParams);
+    }
   }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [collaborationActive, sharedParams]);
 
 // Load results when switching to Results Library tab
@@ -1793,9 +1800,17 @@ useEffect(() => {
 }, [activeTab, loadResults]);
 
 // Update shared params when local changes during collaboration
+// Update shared params when local changes during collaboration
+const lastUpdateRef = useRef(Date.now());
+
 useEffect(() => {
   if (collaborationActive) {
-    updateSharedParams(params);
+    // Debounce updates to prevent rapid-fire syncing
+    const now = Date.now();
+    if (now - lastUpdateRef.current > 100) { // 100ms debounce
+      updateSharedParams(params);
+      lastUpdateRef.current = now;
+    }
   }
 }, [params, collaborationActive, updateSharedParams]);
   
