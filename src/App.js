@@ -2852,19 +2852,21 @@ const renderVideos = () => {
                 controls 
                 preload="metadata"
                 className="video-player"
-                onPlay={(e) => {
-                  const overlay = e.target.parentElement.querySelector('.video-poster-overlay');
-                  if (overlay) overlay.style.display = 'none';
-                }}
-                onPause={(e) => {
-                  const overlay = e.target.parentElement.querySelector('.video-poster-overlay');
-                  if (overlay && e.target.currentTime === 0) overlay.style.display = 'flex';
-                }}
+                id={`video-${vid.id}`}
               >
                 <source src={vid.file} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
-              <div className="video-poster-overlay">
+              <div 
+                className="video-poster-overlay"
+                onClick={(e) => {
+                  const video = document.getElementById(`video-${vid.id}`);
+                  if (video) {
+                    video.play();
+                    e.currentTarget.style.display = 'none';
+                  }
+                }}
+              >
                 <div className="video-poster-content">
                   <div className="play-icon-large">
                     <Play size={64} />
@@ -2873,8 +2875,7 @@ const renderVideos = () => {
                   <span className="video-duration">Click to play • Video {vid.id}</span>
                 </div>
               </div>
-            </div>
-            
+            </div>            
             <div className="video-content-enhanced">
               <div className="video-header-info">
                 <h3>

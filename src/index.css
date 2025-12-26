@@ -1894,6 +1894,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 }
 
 /* Poster Overlay */
+/* Update this part of your video poster overlay CSS */
 .video-poster-overlay {
   position: absolute;
   top: 0;
@@ -1912,6 +1913,12 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   transition: opacity 0.4s ease;
   z-index: 2;
   cursor: pointer;
+  pointer-events: auto; /* IMPORTANT: Make overlay clickable */
+}
+
+/* This ensures when hidden, it doesn't block video controls */
+.video-poster-overlay[style*="display: none"] {
+  pointer-events: none;
 }
 
 .video-poster-overlay:hover {
