@@ -11,7 +11,8 @@ import {
   FastForward, SkipForward, Square, Waves, GitCompare, Brain,
   Lightbulb, Rocket, Info, Box, LineChart as LineChartIcon,
   HelpCircle, AlertCircle, Gauge, Eye, Wind, Book, Hash, Users, Share2, VideoIcon,
-  BookOpen as BookOpenIcon, Target as TargetIcon, Cpu as CpuIcon
+  BookOpen as BookOpenIcon, Target as TargetIcon, Cpu as CpuIcon,
+  FileText, Code
 } from 'lucide-react';
 import { useCollaboration } from './hooks/useCollaboration';
 import { useSimulationResults } from './hooks/useSimulationResults';
@@ -2630,99 +2631,335 @@ useEffect(() => {
       )}
     </div>
   );
+/// ═══════════════════════════════════════════════════════════════════════════
+// CITATION COMPONENT - Proper React Component (BEFORE renderAILab)
+// ═══════════════════════════════════════════════════════════════════════════
 
-  const renderAILab = () => (
-    <div className="section">
-      <div className="ai-lab-header"><div className="ai-lab-title"><Brain size={32} /><div><h2>Transient AI Laboratory</h2><p>Machine Learning Tools for Response Analysis & Optimization</p></div></div></div>
-      
-      <div className="ai-section">
-        <div className="ai-section-header"><Cpu size={20} /><h3>Neural Network Predictions</h3><span className="ai-badge">Real-time</span></div>
-        <p className="ai-description">Physics-informed neural network predicts transient response characteristics.</p>
-        <div className="nn-predictions-grid">
-          <div className="nn-card"><div className="nn-label">Predicted τ₉₅</div><div className="nn-value purple">{nnPred?.tau95.toFixed(3)}</div><div className="nn-actual">Actual: {solution.metrics.tau95.toFixed(3)}</div></div>
-          <div className="nn-card"><div className="nn-label">Predicted Overshoot</div><div className="nn-value pink">{nnPred?.overshoot.toFixed(1)}%</div><div className="nn-actual">Actual: {solution.metrics.overshoot.toFixed(1)}%</div></div>
-          <div className="nn-card"><div className="nn-label">Predicted Cf</div><div className="nn-value amber">{nnPred?.Cf_final.toFixed(4)}</div><div className="nn-actual">Actual: {solution.metrics.CfFinal.toFixed(4)}</div></div>
-          <div className="nn-card"><div className="nn-label">Damping Type</div><div className="nn-value teal">{nnPred?.dampingType}</div><div className="nn-actual">Actual: {solution.metrics.dampingType}</div></div>
-        </div>
+const CitationHelper = ({ params, currentTime }) => {
+  const [copied, setCopied] = useState(false);
+  const [citationFormat, setCitationFormat] = useState('standard');
+
+  const currentParams = {
+    Ha: params.Ha.toFixed(1),
+    Re: params.Re.toFixed(1),
+    Pr: params.Pr.toFixed(1),
+    Ec: params.Ec.toFixed(2),
+    Bi: params.Bi.toFixed(1),
+    phi: (params.phi || 0).toFixed(1),
+    tau: currentTime.toFixed(2)
+  };
+
+  const citationText = `Mosala, S. I. (2025). Unsteady MHD Nanofluid Couette Flow Simulation [Computer software]. Nelson Mandela University. https://mhd-unsteady-app.netlify.app/
+Parameters: Ha = ${currentParams.Ha}, Re = ${currentParams.Re}, Pr = ${currentParams.Pr}, Ec = ${currentParams.Ec}, Bi = ${currentParams.Bi}, φ = ${currentParams.phi}%, τ = ${currentParams.tau}
+Version: 3.5 - Transient Analysis Edition`;
+
+  const bibtexCitation = `@software{mosala2025unsteady,
+  author = {Mosala, S. I.},
+  title = {Unsteady MHD Nanofluid Couette Flow Simulation},
+  year = {2025},
+  institution = {Nelson Mandela University},
+  url = {https://mhd-unsteady-app.netlify.app/},
+  note = {Parameters: Ha = ${currentParams.Ha}, Re = ${currentParams.Re}, Pr = ${currentParams.Pr}, Ec = ${currentParams.Ec}, Bi = ${currentParams.Bi}, φ = ${currentParams.phi}%, τ = ${currentParams.tau}},
+  version = {3.5 - Transient Analysis Edition}
+}`;
+
+  const apaCitation = `Mosala, S. I. (2025). Unsteady MHD nanofluid Couette flow simulation (Version 3.5) [Computer software]. Nelson Mandela University. https://mhd-unsteady-app.netlify.app/`;
+
+  const copyCitation = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="citation-container">
+      <div className="section-header" style={{marginBottom: 'var(--space-lg)'}}>
+        <h3 style={{display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', fontSize: '1.2rem'}}>
+          <BookOpen size={24} /> Citation Helper
+        </h3>
+        <p>Use this citation when referencing this simulation in research</p>
       </div>
-      
-      <div className="ai-section">
-        <div className="ai-section-header"><BarChart3 size={20} /><h3>Sensitivity Analysis</h3><span className="ai-badge gold">Physics</span></div>
-        <p className="ai-description">How sensitive are outputs to each parameter? (normalized ∂output/∂input)</p>
-        {sensitivity && (
-          <div className="sensitivity-chart">
-            <ResponsiveContainer width="100%" height={200}>
-              <ComposedChart data={Object.entries(sensitivity).map(([param, vals]) => ({ param, ...vals }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="param" stroke="rgba(255,255,255,0.5)" tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 11 }} />
-                <YAxis stroke="rgba(255,255,255,0.5)" tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 11 }} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Bar dataKey="tau95" fill="#8b5cf6" name="τ₉₅ sensitivity" />
-                <Bar dataKey="Cf" fill="#ec4899" name="Cf sensitivity" />
-                <Bar dataKey="Nu" fill="#fbbf24" name="Nu sensitivity" />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
+
+      <div className="citation-format-selector">
+        <button 
+          className={`format-btn ${citationFormat === 'standard' ? 'active' : ''}`}
+          onClick={() => setCitationFormat('standard')}
+        >
+          <FileText size={16} /> Standard
+        </button>
+        <button 
+          className={`format-btn ${citationFormat === 'bibtex' ? 'active' : ''}`}
+          onClick={() => setCitationFormat('bibtex')}
+        >
+          <Code size={16} /> BibTeX
+        </button>
+        <button 
+          className={`format-btn ${citationFormat === 'apa' ? 'active' : ''}`}
+          onClick={() => setCitationFormat('apa')}
+        >
+          <BookOpen size={16} /> APA 7
+        </button>
+      </div>
+
+      <div className="citation-box">
+        <pre className="citation-text">
+          {citationFormat === 'standard' && citationText}
+          {citationFormat === 'bibtex' && bibtexCitation}
+          {citationFormat === 'apa' && apaCitation}
+        </pre>
+      </div>
+
+      <button 
+        className="copy-citation-btn"
+        onClick={() => {
+          const textToCopy = citationFormat === 'standard' ? citationText : 
+                             citationFormat === 'bibtex' ? bibtexCitation : apaCitation;
+          copyCitation(textToCopy);
+        }}
+      >
+        {copied ? (
+          <>
+            <Check size={16} /> Copied!
+          </>
+        ) : (
+          <>
+            <Copy size={16} /> Copy Citation
+          </>
         )}
-      </div>
-      
-      <div className="ai-section">
-        <div className="ai-section-header"><Lightbulb size={20} /><h3>Smart Recommendations</h3><span className="ai-badge gold">AI</span></div>
-        <div className="recommendations-list">
-          {aiRecs.map((r, i) => (
-            <div key={i} className="recommendation-card">
-              <span className="rec-icon">{r.icon}</span>
-              <div className="rec-content">
-                <p>{r.text}</p>
-                <span className="rec-impact">{r.impact}</span>
-              </div>
-              {r.action && <button className="rec-action-btn" onClick={() => applyRecommendation(r.action)}>Apply</button>}
-            </div>
-          ))}
+      </button>
+
+      <div className="citation-info">
+        <div className="info-item">
+          <Info size={16} />
+          <span>Current simulation parameters are automatically included in the citation</span>
+        </div>
+        <div className="info-item">
+          <Zap size={16} />
+          <span>Citation updates dynamically based on your parameter settings</span>
         </div>
       </div>
-      
-      <div className="ai-section">
-        <div className="ai-section-header"><Target size={20} /><h3>Genetic Algorithm Optimizer</h3><span className="ai-badge pink">Evolution</span></div>
-        <p className="ai-description">Evolutionary optimization to find best parameters for your goals.</p>
-        <div className="optimizer-controls">
-          <div className="optimizer-goal"><label>Optimization Goal:</label>
-            <select value={optGoal} onChange={(e) => setOptGoal(e.target.value)} disabled={optRunning}>
-              <option value="fast-response">⚡ Fastest Response (Min τ₉₅)</option>
-              <option value="min-overshoot">📉 Minimum Overshoot</option>
-              <option value="max-heat">🔥 Maximum Heat Transfer (Nu)</option>
-              <option value="min-entropy">🌀 Minimum Entropy Generation</option>
-              <option value="balanced">⚖️ Balanced Performance</option>
-            </select>
+
+      <div className="citation-metadata">
+        <h3>Simulation Metadata</h3>
+        <div className="metadata-grid">
+          <div className="metadata-item">
+            <strong>Author:</strong> S. I. Mosala
           </div>
-          <button className={`optimizer-btn ${optRunning ? 'running' : ''}`} onClick={runOptimizer} disabled={optRunning}>
-            {optRunning ? <><div className="spinner"></div>Evolving...</> : <><Sparkles size={18} />Run Optimizer</>}
-          </button>
-        </div>
-        {optProgress && (<div className="optimizer-progress"><div className="progress-bar"><div className="progress-fill" style={{ width: `${(optProgress.generation / optProgress.totalGenerations) * 100}%` }}></div></div><div className="progress-stats"><span>Generation {optProgress.generation}/{optProgress.totalGenerations}</span><span>Best Fitness: {optProgress.bestFitness?.toFixed(4)}</span></div></div>)}
-        {optResult && (<div className="optimizer-result"><div className="result-header"><Award size={24} /><h4>Optimization Complete!</h4></div><div className="optimal-params"><h5>Optimal Parameters Found:</h5><div className="params-grid">{Object.entries(optResult.bestIndividual).map(([k, v]) => (<div key={k} className="param-item"><span className="param-key">{k}</span><span className="param-value">{v.toFixed(3)}</span></div>))}</div></div><button className="apply-btn" onClick={applyOptResult}><Check size={18} />Apply These Parameters</button></div>)}
-      </div>
-      
-      <div className="ai-section">
-        <div className="ai-section-header"><Activity size={20} /><h3>Damping Regime Classifier</h3></div>
-        <div className="chart-wrapper" style={{ height: '200px' }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={solution.evolutionData}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-              <XAxis dataKey="tau" stroke="rgba(255,255,255,0.5)" tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 10 }} />
-              <YAxis domain={[0, 1.3]} stroke="rgba(255,255,255,0.5)" tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 10 }} />
-              <Tooltip content={<CustomTooltip />} />
-              <Line type="monotone" dataKey="Cf_norm" stroke="#8b5cf6" strokeWidth={2.5} dot={false} name="Cf/Cf∞" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="damping-info">
-          <p><strong>Current Regime:</strong> <span className={`damping-badge ${solution.metrics.dampingType.toLowerCase().replace(' ', '-')}`}>{solution.metrics.dampingType}</span></p>
-          <p>Ha = {params.Ha.toFixed(1)} → Magnetic damping ∝ Ha². {params.Ha < 1 ? 'Low damping - expect oscillations.' : params.Ha > 4 ? 'High damping - sluggish response.' : 'Near critical damping - optimal zone.'}</p>
+          <div className="metadata-item">
+            <strong>Institution:</strong> Nelson Mandela University
+          </div>
+          <div className="metadata-item">
+            <strong>Supervisor:</strong> Prof. O. D. Makinde
+          </div>
+          <div className="metadata-item">
+            <strong>Sponsor:</strong> NITheCS
+          </div>
+          <div className="metadata-item">
+            <strong>Year:</strong> 2025
+          </div>
+          <div className="metadata-item">
+            <strong>Version:</strong> 3.5 - Transient Analysis
+          </div>
+          <div className="metadata-item">
+            <strong>Method:</strong> Spectral Quasilinearization
+          </div>
+          <div className="metadata-item">
+            <strong>Application:</strong> Unsteady MHD Flow
+          </div>
         </div>
       </div>
     </div>
   );
+};
+const renderAILab = () => (
+  <div className="section">
+    <div className="ai-lab-header">
+      <div className="ai-lab-title">
+        <Brain size={32} />
+        <div>
+          <h2>Transient AI Laboratory</h2>
+          <p>Machine Learning Tools for Response Analysis & Optimization</p>
+        </div>
+      </div>
+    </div>
+    
+    <div className="ai-section">
+      <div className="ai-section-header">
+        <Cpu size={20} />
+        <h3>Neural Network Predictions</h3>
+        <span className="ai-badge">Real-time</span>
+      </div>
+      <p className="ai-description">Physics-informed neural network predicts transient response characteristics.</p>
+      <div className="nn-predictions-grid">
+        <div className="nn-card">
+          <div className="nn-label">Predicted τ₉₅</div>
+          <div className="nn-value purple">{nnPred?.tau95.toFixed(3)}</div>
+          <div className="nn-actual">Actual: {solution.metrics.tau95.toFixed(3)}</div>
+        </div>
+        <div className="nn-card">
+          <div className="nn-label">Predicted Overshoot</div>
+          <div className="nn-value pink">{nnPred?.overshoot.toFixed(1)}%</div>
+          <div className="nn-actual">Actual: {solution.metrics.overshoot.toFixed(1)}%</div>
+        </div>
+        <div className="nn-card">
+          <div className="nn-label">Predicted Cf</div>
+          <div className="nn-value amber">{nnPred?.Cf_final.toFixed(4)}</div>
+          <div className="nn-actual">Actual: {solution.metrics.CfFinal.toFixed(4)}</div>
+        </div>
+        <div className="nn-card">
+          <div className="nn-label">Damping Type</div>
+          <div className="nn-value teal">{nnPred?.dampingType}</div>
+          <div className="nn-actual">Actual: {solution.metrics.dampingType}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div className="ai-section">
+      <div className="ai-section-header">
+        <BarChart3 size={20} />
+        <h3>Sensitivity Analysis</h3>
+        <span className="ai-badge gold">Physics</span>
+      </div>
+      <p className="ai-description">How sensitive are outputs to each parameter? (normalized ∂output/∂input)</p>
+      {sensitivity && (
+        <div className="sensitivity-chart">
+          <ResponsiveContainer width="100%" height={200}>
+            <ComposedChart data={Object.entries(sensitivity).map(([param, vals]) => ({ param, ...vals }))}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <XAxis dataKey="param" stroke="rgba(255,255,255,0.5)" tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 11 }} />
+              <YAxis stroke="rgba(255,255,255,0.5)" tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 11 }} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Bar dataKey="tau95" fill="#8b5cf6" name="τ₉₅ sensitivity" />
+              <Bar dataKey="Cf" fill="#ec4899" name="Cf sensitivity" />
+              <Bar dataKey="Nu" fill="#fbbf24" name="Nu sensitivity" />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </div>
+    
+    <div className="ai-section">
+      <div className="ai-section-header">
+        <Lightbulb size={20} />
+        <h3>Smart Recommendations</h3>
+        <span className="ai-badge gold">AI</span>
+      </div>
+      <div className="recommendations-list">
+        {aiRecs.map((r, i) => (
+          <div key={i} className="recommendation-card">
+            <span className="rec-icon">{r.icon}</span>
+            <div className="rec-content">
+              <p>{r.text}</p>
+              <span className="rec-impact">{r.impact}</span>
+            </div>
+            {r.action && <button className="rec-action-btn" onClick={() => applyRecommendation(r.action)}>Apply</button>}
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    <div className="ai-section">
+      <div className="ai-section-header">
+        <Target size={20} />
+        <h3>Genetic Algorithm Optimizer</h3>
+        <span className="ai-badge pink">Evolution</span>
+      </div>
+      <p className="ai-description">Evolutionary optimization to find best parameters for your goals.</p>
+      <div className="optimizer-controls">
+        <div className="optimizer-goal">
+          <label>Optimization Goal:</label>
+          <select value={optGoal} onChange={(e) => setOptGoal(e.target.value)} disabled={optRunning}>
+            <option value="fast-response">⚡ Fastest Response (Min τ₉₅)</option>
+            <option value="min-overshoot">📉 Minimum Overshoot</option>
+            <option value="max-heat">🔥 Maximum Heat Transfer (Nu)</option>
+            <option value="min-entropy">🌀 Minimum Entropy Generation</option>
+            <option value="balanced">⚖️ Balanced Performance</option>
+          </select>
+        </div>
+        <button className={`optimizer-btn ${optRunning ? 'running' : ''}`} onClick={runOptimizer} disabled={optRunning}>
+          {optRunning ? <><div className="spinner"></div>Evolving...</> : <><Sparkles size={18} />Run Optimizer</>}
+        </button>
+      </div>
+      {optProgress && (
+        <div className="optimizer-progress">
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${(optProgress.generation / optProgress.totalGenerations) * 100}%` }}></div>
+          </div>
+          <div className="progress-stats">
+            <span>Generation {optProgress.generation}/{optProgress.totalGenerations}</span>
+            <span>Best Fitness: {optProgress.bestFitness?.toFixed(4)}</span>
+          </div>
+        </div>
+      )}
+      {optResult && (
+        <div className="optimizer-result">
+          <div className="result-header">
+            <Award size={24} />
+            <h4>Optimization Complete!</h4>
+          </div>
+          <div className="optimal-params">
+            <h5>Optimal Parameters Found:</h5>
+            <div className="params-grid">
+              {Object.entries(optResult.bestIndividual).map(([k, v]) => (
+                <div key={k} className="param-item">
+                  <span className="param-key">{k}</span>
+                  <span className="param-value">{v.toFixed(3)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <button className="apply-btn" onClick={applyOptResult}>
+            <Check size={18} />Apply These Parameters
+          </button>
+        </div>
+      )}
+    </div>
+    
+    <div className="ai-section">
+      <div className="ai-section-header">
+        <Activity size={20} />
+        <h3>Damping Regime Classifier</h3>
+      </div>
+      <div className="chart-wrapper" style={{ height: '200px' }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={solution.evolutionData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+            <XAxis dataKey="tau" stroke="rgba(255,255,255,0.5)" tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 10 }} />
+            <YAxis domain={[0, 1.3]} stroke="rgba(255,255,255,0.5)" tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 10 }} />
+            <Tooltip content={<CustomTooltip />} />
+            <Line type="monotone" dataKey="Cf_norm" stroke="#8b5cf6" strokeWidth={2.5} dot={false} name="Cf/Cf∞" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="damping-info">
+        <p>
+          <strong>Current Regime:</strong>{' '}
+          <span className={`damping-badge ${solution.metrics.dampingType.toLowerCase().replace(' ', '-')}`}>
+            {solution.metrics.dampingType}
+          </span>
+        </p>
+        <p>
+          Ha = {params.Ha.toFixed(1)} → Magnetic damping ∝ Ha².{' '}
+          {params.Ha < 1 
+            ? 'Low damping - expect oscillations.' 
+            : params.Ha > 4 
+            ? 'High damping - sluggish response.' 
+            : 'Near critical damping - optimal zone.'}
+        </p>
+      </div>
+    </div>
+
+    {/* CITATION HELPER SECTION - Added at the bottom */}
+    <div style={{
+      marginTop: 'calc(var(--space-xl) * 2)', 
+      paddingTop: 'var(--space-xl)', 
+      borderTop: '2px solid var(--border-subtle)'
+    }}>
+      <CitationHelper params={params} currentTime={currentTime} />
+    </div>
+  </div>
+);
 
   const renderPresets = () => (
     <div className="section">
