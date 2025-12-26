@@ -2779,34 +2779,244 @@ useEffect(() => {
     </div>
   );
 
-  const renderVideos = () => (
-    <div className="section">
-      <div className="section-header"><h2><Video size={28} /> Research Videos</h2><p>Upload MATLAB animations to <code>public/videos/</code></p></div>
-      <div className="gallery-grid">
-        {[
-          { title: 'Transient Flow Development', desc: 'Animation showing velocity profile evolution from τ=0 to steady state' },
-          { title: 'Ha Parameter Sweep', desc: 'Effect of Hartmann number on transient response (Ha=0 to Ha=8)' },
-          { title: 'Temperature Evolution', desc: 'Thermal boundary layer development with viscous dissipation' },
-          { title: 'Energy Balance Animation', desc: 'Kinetic and thermal energy evolution over time' },
-          { title: 'Nanoparticle Comparison', desc: 'Cu vs Al₂O₃ vs TiO₂ transient behavior comparison' },
-          { title: 'Damping Regime Transition', desc: 'Underdamped → Critical → Overdamped as Ha increases' }
-        ].map((v, i) => (
-          <div key={i} className="video-card"><div className="video-placeholder"><Video size={48} /><p>Upload video</p><span className="file-hint">public/videos/video_{i + 1}.mp4</span></div><div className="video-info"><h3>{v.title}</h3><p>{v.desc}</p></div></div>
-        ))}
-      </div>
-    </div>
-  );
+const renderVideos = () => {
+  const videos = [
+    {
+      id: 1,
+      file: '/videos/Laminar_Turbulant_Numerical_Solutions.mp4',
+      title: 'Laminar vs Turbulent Flow: Numerical Solutions',
+      description: 'This visualization contrasts laminar and turbulent flow regimes, demonstrating the fundamental difference in flow structure. Laminar flow exhibits smooth, orderly fluid motion with predictable streamlines, while turbulent flow shows chaotic, three-dimensional fluctuations. The numerical approaches shown highlight why different methods are needed: laminar flows can be solved with spectral or finite difference methods (as in our MHD Couette problem), while turbulent flows require Reynolds-Averaged Navier-Stokes (RANS), Large Eddy Simulation (LES), or Direct Numerical Simulation (DNS).',
+      importance: 'Understanding this distinction is critical because our unsteady MHD Couette flow operates in the laminar regime (low Re), allowing precise spectral solutions. The transition to turbulence would require entirely different numerical treatments and could invalidate our current assumptions about flow structure.',
+      relevance: 'MHD Research Context',
+      context: 'At the Reynolds numbers (Re ≤ 5) studied in our research, the flow remains laminar with well-defined velocity profiles. The magnetic field (Hartmann number) provides additional stabilization, further suppressing turbulent transition. This allows our spectral quasilinearization method to achieve machine precision (10⁻¹⁰ accuracy).'
+    },
+    {
+      id: 2,
+      file: '/videos/Fluid_Mechanics_Equations.mp4',
+      title: 'Couette Flow: Problem Formulation and Assumptions',
+      description: 'This educational animation demonstrates classical Couette flow - the canonical problem of fluid motion between parallel plates. The top plate moves with velocity U while the bottom plate remains stationary, creating a linear velocity gradient in simple cases. The video walks through the problem setup, showing how to reduce the full Navier-Stokes equations to a simplified form using key assumptions: steady flow, incompressibility, and fully developed conditions.',
+      importance: 'Couette flow is the foundation of our research problem. By understanding the classical isothermal case, we can appreciate how adding magnetic fields (MHD), nanofluids, thermal effects, and transient behavior increases complexity. The assumptions shown in this video guide which terms we retain in our governing equations.',
+      relevance: 'Direct Application to Research',
+      context: 'Our unsteady MHD nanofluid Couette flow extends this classical problem by adding: (1) time dependence (∂/∂t terms), (2) Lorentz force from magnetic field (Ha² terms), (3) nanofluid property ratios (A₁-A₅), (4) viscous dissipation and Joule heating (Ec terms), and (5) slip boundary conditions (λ parameter). Each addition requires careful treatment in the numerical scheme.'
+    },
+    {
+      id: 3,
+      file: '/videos/Entropy.mp4',
+      title: 'Entropy: The Second Law of Thermodynamics',
+      description: 'Entropy quantifies the irreversibility and disorder in a thermodynamic system. This video explains entropy generation from a fundamental perspective: whenever energy transformations occur (heat transfer across temperature gradients, fluid friction, electrical resistance), some useful energy is irreversibly converted to thermal energy at ambient temperature. The Second Law states that total entropy can never decrease in an isolated system.',
+      importance: 'In fluid mechanics and heat transfer, minimizing entropy generation is equivalent to maximizing system efficiency. Every irreversible process - whether viscous dissipation in flow, heat conduction across finite temperature differences, or Joule heating from electrical currents - generates entropy and represents lost work potential (exergy destruction).',
+      relevance: 'Entropy Generation Analysis (Chapter 7)',
+      context: 'Our research calculates three entropy sources: (1) Ns_heat from temperature gradients (thermal irreversibility), (2) Ns_fluid from velocity gradients (viscous friction), and (3) Ns_magnetic from Joule heating (electromagnetic irreversibility). The Bejan number Be = Ns_heat/Ns_total identifies which mechanism dominates. For our baseline case, Be ≈ 0.34, meaning friction and magnetic effects slightly outweigh thermal irreversibility - critical for optimizing MHD device efficiency.'
+    },
+    {
+      id: 4,
+      file: '/videos/Heat_Transfer_Conduction_Convection.mp4',
+      title: 'Heat Transfer Mechanisms: Conduction and Convection',
+      description: 'Heat transfer occurs through three mechanisms: conduction (molecular energy transfer in stationary media), convection (energy transport by fluid motion), and radiation (electromagnetic waves). This video focuses on conduction and convection, showing how Fourier\'s law (q = -k∇T) governs conduction, while convection combines fluid motion with conduction. The convective heat transfer coefficient h relates surface heat flux to temperature difference: q = h(T_surface - T_fluid).',
+      importance: 'Understanding the distinction between conduction and convection is essential for analyzing thermal boundary layers. In our problem, both mechanisms operate simultaneously: conduction dominates near walls where velocity gradients are steep, while convection becomes important in the core flow. The Prandtl number Pr determines the relative thickness of momentum and thermal boundary layers.',
+      relevance: 'Thermal Analysis and Nusselt Number',
+      context: 'Our thermal energy equation includes: (1) conduction term (A₃∂²θ/∂η²), (2) convective effects implicitly through the transient term (A₅Pr∂θ/∂τ), and (3) heat generation from viscous dissipation (A₁PrEc(∂W/∂η)²) and Joule heating (A₂PrEcHa²W²). The Nusselt number Nu quantifies the enhancement of heat transfer beyond pure conduction. The Biot number Bi at the upper plate represents convective cooling: Bi = hL/k.'
+    },
+    {
+      id: 5,
+      file: '/videos/chip_refrigerant_cooling.mp4',
+      title: 'Microfluidic Cooling: Thermal Management of Microchips',
+      description: 'Modern electronics face critical thermal management challenges as transistor densities increase. This video demonstrates microfluidic cooling strategies where coolant flows through microchannels etched into or beneath heat-generating components. The small length scales enhance heat transfer (higher surface-to-volume ratio) but introduce challenges: increased pressure drop, entrance effects, and potential flow instabilities. Nanofluids - fluids containing nanometer-sized particles - offer enhanced thermal conductivity for improved cooling performance.',
+      importance: 'This represents a key practical application of nanofluid heat transfer research. By suspending high-conductivity nanoparticles (Cu, Al₂O₃, carbon nanotubes) in base fluids like water or ethylene glycol, thermal conductivity can increase 20-40% at modest volume fractions. However, viscosity also increases, raising pumping power requirements - a critical tradeoff.',
+      relevance: 'Nanofluid Application Context',
+      context: 'Our research directly applies to microfluidic thermal management. The nanofluid property ratios we study (A₃ = k_nf/k_f for thermal conductivity, A₁ = μ_nf/μ_f for viscosity) determine the performance tradeoff. Our results show that Cu and Al₂O₃ nanoparticles at φ=5% increase Nu by ~40% (better cooling) but increase Cf by ~12% (higher pumping power). The magnetic field (MHD) adds another control mechanism: applying a magnetic field can reduce flow velocity near walls, potentially preventing hot spots.'
+    },
+    {
+      id: 6,
+      file: '/videos/mhd_flow_visualization.mp4',
+      title: 'MHD Flow: Magnetohydrodynamics and Applications',
+      description: 'Magnetohydrodynamics (MHD) studies the interaction between magnetic fields and electrically conducting fluids. When a conducting fluid moves through a magnetic field, it induces electrical currents (Faraday\'s law), which in turn generate Lorentz forces (J × B) that oppose the motion. This video visualizes how magnetic fields can control, pump, or brake fluid flow without mechanical contact - enabling applications in metallurgy, nuclear fusion, electromagnetic pumps, and flow meters.',
+      importance: 'MHD provides contactless flow control with no moving parts, crucial for handling corrosive fluids, liquid metals, or ionized gases. The Hartmann number Ha measures the ratio of magnetic forces to viscous forces: Ha = BL√(σ/μ). At Ha > 1, magnetic forces dominate, fundamentally altering flow structure. In fusion reactors, MHD suppresses turbulence in liquid metal blankets; in continuous casting, it controls molten steel flow.',
+      relevance: 'Core of Our MHD Research',
+      context: 'Our unsteady MHD Couette flow investigates how magnetic fields affect transient response. Key findings: (1) At Ha=0 (no field), the flow is underdamped with overshoot. (2) At Ha≈2-3, critically damped - fastest approach to steady state without oscillation. (3) At Ha>5, overdamped - sluggish response but high stability. The magnetic damping time scale τ_mag ~ A₄/(A₂Ha²) governs transient behavior. The Lorentz force term -A₂Ha²W acts as distributed resistance, extracting kinetic energy and converting it to Joule heat, which appears in our entropy generation analysis (Ns_magnetic term).'
+    }
+  ];
 
-  const renderFigures = () => (
+  return (
     <div className="section">
-      <div className="section-header"><h2><Image size={28} /> Research Figures</h2><p>Upload plots to <code>public/images/</code></p></div>
-      <div className="gallery-grid">
-        {['Grid Convergence', 'Time Step Convergence', 'Validation', 'Ha Parametric Study', 'Re Parametric Study', 'Pr Parametric Study', 'Ec Parametric Study', 'Bi Parametric Study', 'Overshoot Analysis', 'Energy Evolution', 'Entropy Analysis', 'Nanofluid Comparison'].map((t, i) => (
-          <div key={i} className="gallery-item"><div className="gallery-placeholder"><Image size={48} /><span>Fig {i + 1}</span></div><div className="gallery-info"><h3>Fig {i + 1}: {t}</h3></div></div>
+      <div className="section-header">
+        <h2><Video size={28} /> Educational Videos</h2>
+        <p>Fundamental concepts in fluid mechanics, heat transfer, and magnetohydrodynamics</p>
+      </div>
+      
+      <div className="video-library">
+        {videos.map((vid) => (
+          <div key={vid.id} className="video-card-enhanced">
+            <div className="video-player-container">
+              <video 
+                controls 
+                preload="metadata"
+                className="video-player"
+                poster={`/images/video-poster-${vid.id}.jpg`}
+              >
+                <source src={vid.file} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            
+            <div className="video-content-enhanced">
+              <div className="video-header-info">
+                <h3>
+                  <span className="video-number">Video {vid.id}</span>
+                  {vid.title}
+                </h3>
+              </div>
+              
+              <div className="video-description-section">
+                <div className="description-block">
+                  <h4><BookOpen size={16} /> Overview</h4>
+                  <p>{vid.description}</p>
+                </div>
+                
+                <div className="description-block importance">
+                  <h4><Lightbulb size={16} /> Physical Significance</h4>
+                  <p>{vid.importance}</p>
+                </div>
+                
+                <div className="description-block context">
+                  <h4><Target size={16} /> {vid.relevance}</h4>
+                  <p>{vid.context}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         ))}
       </div>
     </div>
   );
+};
+
+const renderFigures = () => {
+  const figures = [
+    {
+      id: 1,
+      file: '/images/Validation_Unsteady_Steady.png',
+      title: 'Validation: Unsteady → Steady Convergence',
+      discussion: 'This figure validates the unsteady solver by comparing the final steady-state solution (τ→∞) with the dedicated steady-state solver. The velocity and temperature profiles show excellent agreement (errors < 10⁻¹⁰), confirming that the transient solver correctly converges to steady state. The convergence plots for Cf and Nu demonstrate asymptotic approach to steady values, while the solver residuals achieve machine precision (10⁻¹⁰), validating the numerical implementation of the Spectral Quasilinearization Method.'
+    },
+    {
+      id: 2,
+      file: '/images/Combined_Parameter_Effects.png',
+      title: 'Combined Parameter Effects: Ha vs Re Interaction',
+      discussion: 'This comprehensive study reveals the interaction between magnetic damping (Ha) and flow inertia (Re). The Cf heatmap shows that increasing Ha suppresses skin friction across all Re values, while Nu increases with both parameters due to enhanced convection. The cross-plot demonstrates that magnetic damping effects are more pronounced at higher Reynolds numbers, where the Lorentz force must overcome stronger inertial effects. This analysis is crucial for optimizing MHD flow control applications.'
+    },
+    {
+      id: 3,
+      file: '/images/Eckert_Number_effect.png',
+      title: 'Eckert Number Effect: Viscous Dissipation Heating',
+      discussion: 'The Eckert number (Ec) quantifies the ratio of kinetic energy to enthalpy. At Ec=0, pure conduction dominates with minimal heat transfer enhancement. As Ec increases to 0.5, viscous dissipation becomes significant, causing Nu to increase four-fold. The normalized response curves show that higher Ec accelerates thermal development, with the system reaching steady state faster. This has important implications for high-speed flows and thermal management systems where viscous heating cannot be neglected.'
+    },
+    {
+      id: 4,
+      file: '/images/Energy_Evaluation.png',
+      title: 'Energy Evolution: Conservation and Dissipation',
+      discussion: 'This analysis confirms energy conservation in the system. Kinetic energy (KE) rapidly saturates as velocity reaches steady state, while thermal energy (TE) increases linearly due to continuous heating from viscous and Joule dissipation. The total energy evolution shows physically correct positive growth. The dissipation split reveals that viscous dissipation contributes ~50% and Joule heating ~50% to total irreversibility, with viscous effects dominating initially (75%) before settling to equilibrium. This validates the thermodynamic consistency of the model.'
+    },
+    {
+      id: 5,
+      file: '/images/Enhanced_Unsteady_Solution.png',
+      title: 'Enhanced Unsteady Solution: Complete Picture',
+      discussion: 'This comprehensive visualization presents all key aspects of the unsteady MHD problem. The velocity evolution shows monotonic approach to steady state at different heights (η), while temperature exhibits non-monotonic behavior due to competing heat sources. The final profiles demonstrate the characteristic Couette velocity distribution and temperature stratification. Contour plots reveal the spatio-temporal development of both fields, with the 3D surfaces providing intuitive understanding of the solution topology. The normalized response and rate of change plots confirm exponential convergence, characteristic of overdamped systems with Ha=2.'
+    },
+    {
+      id: 6,
+      file: '/images/Entropy_Analysis.png',
+      title: 'Entropy Generation Analysis: Second Law Thermodynamics',
+      discussion: 'The entropy generation distribution shows peak irreversibility near the lower plate where velocity gradients are steepest. The integrated entropy evolution reveals that thermal irreversibility initially dominates (Be≈0.7), but friction and Joule heating become comparable at steady state (Be≈0.34), indicating balanced dissipation mechanisms. Parametric studies show entropy decreases with Ha (due to reduced velocity gradients) but increases dramatically with Ec (viscous heating). The final Bejan number Be=0.335 confirms that friction irreversibility slightly dominates in this configuration, critical for thermodynamic optimization of MHD devices.'
+    },
+    {
+      id: 7,
+      file: '/images/Grid_Convergence.png',
+      title: 'Grid Convergence: Spectral Accuracy',
+      discussion: 'The spectral collocation method demonstrates exponential convergence - a hallmark of spectral methods for smooth solutions. At N=20, the solution achieves 10-digit accuracy (error~10⁻¹⁰), confirming spectral convergence. Beyond N=40, round-off errors dominate, showing the practical limit of double-precision arithmetic. The computational cost grows quadratically with N, but the extreme accuracy at modest grid sizes (N=50 chosen for production runs) makes spectral methods ideal for this smooth MHD problem. This validates the choice of Chebyshev collocation over finite difference methods.'
+    },
+    {
+      id: 8,
+      file: '/images/Hartman_Number_Effect.png',
+      title: 'Hartmann Number Effect: Magnetic Damping Regimes',
+      discussion: 'This study reveals three distinct damping regimes: (1) Ha=0: underdamped with ~0.85% overshoot, (2) Ha=2-4: critically damped with minimal overshoot and fastest response (τ₉₅≈0.15), and (3) Ha>6: overdamped with no overshoot but sluggish response (τ₉₅≈0.05). The normalized response curves transition from oscillatory to monotonic as Ha increases. The final Cf values decrease nonlinearly with Ha², confirming the quadratic Lorentz force relationship. The response time comparison shows Ha≈2-3 provides optimal control - fast settling without oscillations - making it ideal for MHD flow regulation applications.'
+    },
+    {
+      id: 9,
+      file: '/images/Limiting_Case_Compareson.png',
+      title: 'Limiting Cases Validation',
+      discussion: 'This systematic validation tests the code against known analytical and limiting solutions: (1) Ha=0 recovers classical Couette flow with linear velocity, (2) Ec=0 eliminates viscous heating showing pure conduction, (3) λ=0 enforces no-slip condition, (4) G=0 removes pressure-driven component, (5) Bi→∞ approaches isothermal upper boundary, and (6) Re=0 gives Poiseuille flow from pressure gradient alone. All cases match theoretical expectations with machine precision, confirming the versatility and correctness of the numerical implementation across the entire parameter space.'
+    },
+    {
+      id: 10,
+      file: '/images/Nanao_Particle_Comparison.png',
+      title: 'Nanoparticle Comparison: Cu vs Al₂O₃',
+      discussion: 'Copper (Cu) and alumina (Al₂O₃) nanoparticles show nearly identical behavior in friction and heat transfer metrics. Both exhibit linear enhancement with volume fraction φ: increasing from φ=0% to φ=10% raises Cf by ~20% (due to increased viscosity) and Nu by ~75% (enhanced thermal conductivity). The performance map reveals Cu and Al₂O₃ follow the same trajectory, suggesting that for this flow regime, the nanoparticle type is less important than the volume fraction. The slight Cu advantage (2-3% higher k) is negligible compared to viscosity penalties. This finding suggests Al₂O₃ may be preferred due to lower cost and better stability.'
+    },
+    {
+      id: 11,
+      file: '/images/Overshoot_Damping_Analysis.png',
+      title: 'Overshoot & Damping Classification',
+      discussion: 'This detailed analysis characterizes the transient overshoot phenomenon. The absolute response shows clear overshoot only for Ha<2, while normalized curves reveal the approach to unity (final value). Peak overshoot occurs at Ha≈6 with ~0.85% excess, while critically damped behavior (Ha≈2-3) minimizes overshoot while maintaining fast response. The time-to-peak decreases exponentially with Ha, and settling time follows similar trends. The phase plane trajectories spiral for low Ha (underdamped) and curve smoothly for high Ha (overdamped). The overshoot vs settling time plot identifies the optimal zone: Ha=2-3 provides the best compromise between speed and stability for control applications.'
+    },
+    {
+      id: 12,
+      file: '/images/Prand_Number_Effect.png',
+      title: 'Prandtl Number Effect: Thermal Diffusion',
+      discussion: 'The Prandtl number (Pr) quantifies the relative thickness of momentum and thermal boundary layers. At Pr=0.7 (gases), thermal diffusion dominates, resulting in thick thermal layers and low Nu≈0.4. For Pr=6.2 (water), the thermal layer is much thinner than the momentum layer, increasing Nu≈0.95. High-Pr fluids (Pr=15, oils) have very thin thermal boundary layers, further enhancing heat transfer to Nu≈1.38. The evolution curves show that higher Pr fluids reach thermal steady state more slowly due to lower thermal diffusivity. This demonstrates the critical role of working fluid selection in MHD heat exchangers.'
+    },
+    {
+      id: 13,
+      file: '/images/Reynold_Number_Effect.png',
+      title: 'Reynolds Number Effect: Flow Inertia',
+      discussion: 'Reynolds number represents the dimensionless upper plate velocity. The evolution curves show that higher Re leads to proportionally higher final skin friction - Cf increases linearly with Re (slope≈-0.5), confirming the direct relationship between plate speed and wall shear stress. The normalized response curves collapse onto a single trajectory, indicating that Re does not affect the transient dynamics (τ₉₅ remains constant). This separation of timescale and amplitude is characteristic of linear systems and confirms that the magnetic damping timescale (governed by Ha) is independent of the driving velocity. This simplifies control system design for MHD applications.'
+    },
+    {
+      id: 14,
+      file: '/images/Time_step_Convergence.png',
+      title: 'Time Step Convergence: Temporal Accuracy',
+      discussion: 'The temporal discretization study confirms first-order accuracy of the implicit Euler method. As time step Δτ decreases, the solution converges linearly (error ∝ Δτ) to the exact value Cf=-0.6596966422. The convergence plot on log-log scale shows a slope of 1.0, verifying first-order temporal accuracy. At Δτ=0.001, the error is ~10⁻⁶, sufficient for most applications. While higher-order methods (RK4, BDF2) could reduce errors further, the implicit Euler scheme provides excellent stability for stiff MHD problems with strong magnetic damping. The chosen Δτ=0.02 balances accuracy and computational efficiency for parametric studies.'
+    }
+  ];
+
+  return (
+    <div className="section">
+      <div className="section-header">
+        <h2><Image size={28} /> Research Figures</h2>
+        <p>Comprehensive visual analysis of unsteady MHD nanofluid Couette flow</p>
+      </div>
+      
+      <div className="figures-gallery">
+        {figures.map((fig) => (
+          <div key={fig.id} className="figure-card">
+            <div className="figure-image-container">
+              <img 
+                src={fig.file} 
+                alt={fig.title}
+                className="figure-image"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              <div className="figure-placeholder" style={{ display: 'none' }}>
+                <Image size={48} />
+                <span>Fig {fig.id}</span>
+              </div>
+            </div>
+            <div className="figure-content">
+              <h3>
+                <span className="figure-number">Figure {fig.id}</span>
+                {fig.title}
+              </h3>
+              <p className="figure-discussion">{fig.discussion}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 const renderResultsLibrary = () => {
   if (libraryLoading) {
     return (
