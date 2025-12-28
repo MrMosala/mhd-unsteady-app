@@ -295,12 +295,7 @@ function solveUnsteadyMHDCouette(params, tauFinal = 2.0, dtau = 0.02, saveFreq =
   
   let W = new Array(N + 1).fill(0);
   let Theta = new Array(N + 1).fill(1);
-  
-  for (let i = 0; i <= N; i++) {
-    W[i] = eta[i] * Re / (1 + lambda);
-    Theta[i] = 1 - (Bi / (1 + Bi)) * eta[i];
-  }
-  
+    
   const Nt = Math.floor(tauFinal / dtau);
   const tauHistory = [0];
   const WHistory = [W.slice()];
@@ -351,7 +346,7 @@ function solveUnsteadyMHDCouette(params, tauFinal = 2.0, dtau = 0.02, saveFreq =
       
       let maxDiff = 0;
       for (let i = 0; i <= N; i++) maxDiff = Math.max(maxDiff, Math.abs(W[i] - W_prev[i]), Math.abs(Theta[i] - Theta_prev[i]));
-      if (maxDiff < 1e-10) break;
+      if (maxDiff < 1e-6) break;
     }
     
     if (n % saveFreq === 0 || n === Nt) {
@@ -480,7 +475,7 @@ function computeNanofluidProperties(type, phi) {
   const p = NANOPARTICLES[type];
   const A4 = ((1 - phi) * rho_f + phi * p.rho) / rho_f;
   const A1 = 1 / Math.pow(1 - phi, 2.5);
-  const A3 = (p.k + 2 * k_f + 2 * phi * (p.k - k_f)) / (p.k + 2 * k_f - phi * (p.k - k_f));
+  const A3 = (p.k + 2*k_f - 2*phi*(k_f - p.k)) / (p.k + 2*k_f + phi*(k_f - p.k));
   const A5 = ((1 - phi) * rho_f * Cp_f + phi * p.rho * p.Cp) / (rho_f * Cp_f);
   const sr = p.sigma / sigma_f;
   const A2 = 1 + 3 * phi * (sr - 1) / (sr + 2 - phi * (sr - 1));
@@ -1721,7 +1716,10 @@ function App() {
   const [currentTime, setCurrentTime] = useState(0);
   const [copied, setCopied] = useState(false);
   
-  const [params, setParams] = useState({ A1: 1.2, A2: 1.5, A3: 1.3, A4: 1.1, A5: 1.15, Re: 1.0, Ha: 2.0, Pr: 6.2, Ec: 0.1, Bi: 0.5, lambda: 0.1, G: 0.5, N: 50 });
+  const [params, setParams] = useState({ 
+  A1: 1.2, A2: 1.5, A3: 1.3, A4: 1.1, A5: 1.15, 
+  Re: 1.0, Ha: 2.0, Pr: 6.2, Ec: 0.01, Bi: 2.0, lambda: 0.001, G: 0, N: 50 
+});
   const [tauFinal, setTauFinal] = useState(2.0);
   const [selectedNP, setSelectedNP] = useState('Custom');
   const [phi, setPhi] = useState(0.02);
