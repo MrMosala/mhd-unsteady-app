@@ -336,7 +336,7 @@ function solveUnsteadyMHDCouette(params, tauFinal = 2.0, dtau = 0.02, saveFreq =
         const diag = 2 * A1 / (h * h) + A2 * Ha * Ha + A4 / dtau;
         W[i] = (coeff * (W_prev[i - 1] + W_prev[i + 1]) + G + (A4 / dtau) * W_old[i]) / diag;
       }
-      W[0] = 0; W[N] = (Re + lambda * W[N - 1] / h) / (1 + lambda / h);
+      W[0] = 0; W[N] = (Re - lambda * W[N - 1] / h) / (1 - lambda / h);
       
       for (let i = 1; i < N; i++) Wp[i] = (W[i + 1] - W[i - 1]) / (2 * h);
       Wp[0] = (W[1] - W[0]) / h; Wp[N] = (W[N] - W[N - 1]) / h;
@@ -464,7 +464,7 @@ function solveQuick(params) {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const NANOPARTICLES = {
-  'Cu': { name: 'Copper (Cu)', icon: '🟤', rho: 8933, k: 401, Cp: 385, sigma: 5.96e7, desc: 'High thermal & electrical conductivity' },
+  'Cu': { name: 'Copper (Cu)', icon: '🟤', rho: 8933, k: 401, Cp: 385, sigma: 58e6, desc: 'High thermal & electrical conductivity' },
   'Al2O3': { name: 'Alumina (Al₂O₃)', icon: '⚪', rho: 3970, k: 40, Cp: 765, sigma: 1e-10, desc: 'Ceramic, electrically insulating' },
   'TiO2': { name: 'Titanium Dioxide (TiO₂)', icon: '🔵', rho: 4250, k: 8.95, Cp: 686, sigma: 1e-12, desc: 'Photocatalytic, low conductivity' },
   'Ag': { name: 'Silver (Ag)', icon: '⬜', rho: 10500, k: 429, Cp: 235, sigma: 6.3e7, desc: 'Highest electrical conductivity' },
@@ -475,7 +475,7 @@ const NANOPARTICLES = {
 };
 
 function computeNanofluidProperties(type, phi) {
-  const rho_f = 997, k_f = 0.613, Cp_f = 4179, sigma_f = 0.05;
+  const rho_f = 997, k_f = 0.613, Cp_f = 4179, sigma_f = 5.5e-6;
   if (!NANOPARTICLES[type]) return { A1: 1.2, A2: 1.5, A3: 1.3, A4: 1.1, A5: 1.15 };
   const p = NANOPARTICLES[type];
   const A4 = ((1 - phi) * rho_f + phi * p.rho) / rho_f;
