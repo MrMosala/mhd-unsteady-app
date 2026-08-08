@@ -2333,3 +2333,110 @@ video::-webkit-media-controls-timeline {
     grid-template-columns: 1fr;
   }
 }
+/* Second-pass additions: validation table, derived ratios, KaTeX blocks */
+.validation-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.validation-table th,
+.validation-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.validation-table th {
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+}
+.validation-table td {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.validation-table tbody tr:hover { background: var(--bg-tertiary); }
+
+.derived-ratios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.derived-ratios span {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm, 6px);
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #c9d1d9);
+  font-variant-numeric: tabular-nums;
+}
+
+.tex-block {
+  display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 6px 2px;
+}
+.tex-block .katex-display { margin: 0.3em 0; }
+.equation .katex { color: var(--text-primary); font-size: 1.05em; }
+.equation-grid .eq { overflow-x: auto; }
+
+/* Accepted manuscript PDF download button (Theory tab) */
+.pdf-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 16px;
+  background: var(--gradient-primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.pdf-download-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--accent-purple-glow);
+}
+
+/* Transient tab: visualization caption and layer toggles (pass 4) */
+.viz-caption {
+  margin: 4px 0 10px;
+  padding: 10px 14px;
+  background: var(--bg-tertiary);
+  border-left: 3px solid var(--accent-purple);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--text-secondary, #c9d1d9);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.viz-layer-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: var(--space-md);
+  padding: 10px 14px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+.viz-layer-toggles .viz-layer-label {
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+.viz-layer-toggles label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #c9d1d9);
+  white-space: nowrap;
+}

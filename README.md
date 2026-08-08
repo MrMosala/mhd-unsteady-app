@@ -1,138 +1,94 @@
 # Unsteady MHD Nanofluid Couette Flow
 
-## Transient Analysis Simulation
+An interactive, browser-based simulator for transient (unsteady) magnetohydrodynamic
+nanofluid Couette flow, with thermo-entropic analysis and a quantum linear-solver
+comparison. It accompanies the manuscript "Thermo-Entropic Analysis of Unsteady MHD
+Nanofluid Couette Flow" (MMNSA).
 
-A comprehensive React application for simulating and visualizing **time-dependent (unsteady)** magnetohydrodynamic nanofluid Couette flow with viscous dissipation and Joule heating.
+## What it does
 
-### 📚 Research Context
+The app solves the coupled, time-dependent momentum and energy equations for an
+electrically conducting nanofluid between two parallel plates. The lower plate is
+stationary and at ambient temperature; the upper plate moves with Navier slip and
+exchanges heat convectively (a Robin condition). A uniform transverse magnetic field
+brakes the flow through a Lorentz force and adds Joule heating. You can watch the flow
+start from rest and relax to the steady Couette profile, and read off the derived
+engineering quantities live.
 
-**Title:** Unsteady MHD Nanofluid Couette Flow with Heat Transfer  
-**Candidate:** Mr. S.I. Mosala  
-**Supervisor:** Prof. O.D. Makinde  
-**Institution:** Nelson Mandela University  
-**Date:** December 2025
+## The science in brief
 
----
+- Dimensionless momentum: `A4 dW/dtau = A1 d2W/deta2 - A2 Ha^2 W + G`
+- Dimensionless energy: `A5 Pr dtheta/dtau = A3 d2theta/deta2 + A1 Pr Ec (dW/deta)^2 + A2 Pr Ec Ha^2 W^2`
+- Initial and boundary conditions: start from rest at ambient; `W(0)=0, theta(0)=0`;
+  `W(1)=Re - lambda dW/deta`; `dtheta/deta(1) = -Bi theta(1)`.
+- Nanofluid properties: Brinkman viscosity, Maxwell conductivity ratios, and mixing
+  rules for density and heat capacity. Base fluid: water. Nanoparticles: Cu and Al2O3.
+- Entropy generation `Ns = A3 (dtheta/deta)^2 + A1 Ec Pr (dW/deta)^2 + A2 Pr Ec Ha^2 W^2`
+  and the Bejan number `Be = N1 / (N1 + N2 + N3)`.
 
-## 🌟 Key Features
+Parameters: Hartmann number Ha, Reynolds number Re, Prandtl number Pr, Eckert number Ec,
+Biot number Bi, slip parameter lambda, pressure gradient G, and volume fraction phi.
 
-### Transient Simulation
-- **Time-stepping solver** with implicit scheme
-- **Playback controls** (play, pause, step, skip)
-- **Real-time visualization** of flow development
+## Tabs
 
-### Parametric Studies
-- Hartmann Number (Ha) effects on magnetic damping
-- Reynolds Number (Re) - upper plate velocity
-- Prandtl Number (Pr) - thermal diffusivity
-- Eckert Number (Ec) - viscous dissipation
-- Biot Number (Bi) - convective cooling
-- Slip Parameter (λ) - boundary slip
+| Tab | What it shows |
+|-----|---------------|
+| Transient | Animated channel with the moving Couette wall, plus live Cf, Nu, Ns and Be versus time |
+| Velocity | W(eta) over time with live checks of the no-slip and Navier-slip wall conditions |
+| Temperature | theta(eta) over time with live checks of the ambient and convective (Robin) wall conditions |
+| Energy | Kinetic and thermal energy, viscous and Joule dissipation, and the entropy split |
+| Validation | Live reproduction of the manuscript exact-solution benchmark with measured error and PASS or FAIL |
+| Figures | The published manuscript figures with the key finding of each |
+| Theory | Dimensional and dimensionless equations, scaling variables, property models, entropy and Bejan analysis (rendered with KaTeX), and a link to the accepted paper |
+| Quantum | HHL and VQLS results for the discretised linear system, sourced from the manuscript and the project code |
 
-### Nanofluid Properties
-- Cu-Water (Copper nanoparticles)
-- Al₂O₃-Water (Alumina)
-- TiO₂-Water (Titanium dioxide)
-- Customizable volume fraction
+## How it computes, and an honest note on methods
 
-### Response Metrics
-- τ₉₅ (95% response time)
-- Overshoot percentage
-- Settling time
-- Damping classification
+The app uses an implicit finite-difference solver (a Crank-Nicolson-type, tridiagonal
+scheme) marched in time. This is chosen for speed and interactivity in the browser.
 
----
+The research results in the manuscript use higher-accuracy spectral and Crank-Nicolson
+methods (the Bivariate Spectral Quasilinearisation Method, BI-SQLM). The app reproduces
+the manuscript exact-solution benchmark to a maximum absolute error of about 3.49e-4,
+which is comparable to the manuscript solver's own truncation error, but the app should
+be understood as an interactive companion, not the reference solver.
 
-## 🔬 Governing Equations
+The quantum results shown in the Quantum tab (HHL and VQLS) are quoted from the project
+code and the manuscript. They were produced on the Qiskit Aer statevector simulator, not
+on real quantum hardware, and are labeled as such throughout.
 
-### Unsteady Momentum Equation
-```
-A₄ ∂W/∂τ = A₁ ∂²W/∂η² - A₂·Ha²·W + G
-```
+## Tech stack
 
-### Unsteady Energy Equation
-```
-A₅·Pr ∂θ/∂τ = A₃ ∂²θ/∂η² + A₁·Pr·Ec·(∂W/∂η)² + A₂·Pr·Ec·Ha²·W²
-```
+- React 18 (Create React App)
+- Recharts for plotting
+- KaTeX for equation rendering
+- HTML canvas for the flow animation
+- lucide-react for icons
+- Supabase (optional) for the collaboration and save-results features; the app runs
+  fully without it
 
-### Boundary Conditions
-- **Lower plate (η=0):** W=0 (no-slip), θ=1 (isothermal)
-- **Upper plate (η=1):** W - λ·∂W/∂η = Re (slip), ∂θ/∂η + Bi·θ = 0 (convective)
+## Run locally
 
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 16+ 
-- npm or yarn
-
-### Installation
 ```bash
-# Extract the zip file
-unzip mhd-unsteady-app.zip
-cd mhd-unsteady-app
-
-# Install dependencies
 npm install
-
-# Start development server
 npm start
 ```
 
-### Build for Production
+Then open http://localhost:3000.
+
+To create a production build:
+
 ```bash
 npm run build
 ```
 
----
+The optional collaboration and save-results features read Supabase credentials from a
+local `.env` file (`REACT_APP_SUPABASE_URL` and `REACT_APP_SUPABASE_ANON_KEY`). The
+`.env` file is gitignored and is not required to run or build the app; without it, those
+two features simply stay offline.
 
-## 📱 Tabs Overview
+## Credits
 
-| Tab | Description |
-|-----|-------------|
-| **Transient** | Main simulation with playback controls and Cf/Nu evolution |
-| **Profiles** | Velocity and temperature profile development over time |
-| **Energy** | Kinetic and thermal energy evolution analysis |
-| **Presets** | Pre-configured scenarios for quick exploration |
-| **Theory** | Mathematical formulation and equations |
-
----
-
-## 🎮 Using the Simulation
-
-1. **Open the Transient tab**
-2. **Adjust parameters** using the floating control panel (⚙️ button)
-3. **Press Play** to watch the transient response develop
-4. **Observe** skin friction (Cf) and Nusselt number (Nu) evolution
-5. **Check response metrics** (τ₉₅, overshoot, settling time)
-
----
-
-## 📊 Physical Insights
-
-### Effect of Hartmann Number (Ha)
-- **Ha=0:** Pure viscous flow (Couette profile)
-- **Ha>4:** Magnetic damping dominates (Hartmann layers)
-- Higher Ha → Faster response, reduced overshoot
-
-### Effect of Eckert Number (Ec)
-- Higher Ec → More viscous dissipation → Temperature rise
-
-### Effect of Biot Number (Bi)
-- Higher Bi → Enhanced convective cooling at upper plate
-
----
-
-## 🔧 Technical Details
-
-- **Solver:** Spectral Quasi-Linearization Method (SQLM)
-- **Spatial discretization:** Chebyshev collocation
-- **Time integration:** Implicit scheme
-- **Grid:** N=50 Chebyshev points (default)
-
----
-
-## 📄 License
-
-Academic use - Nelson Mandela University © 2025
+Candidate: Mr S.I. Mosala. Supervisors: Prof. A. Muronga (Nelson Mandela University,
+primary) and Prof. O.D. Makinde (Stellenbosch University, co-supervisor).
+Nelson Mandela University, 2026.

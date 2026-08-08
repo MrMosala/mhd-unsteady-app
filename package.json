@@ -4,8 +4,8 @@
   "description": "Unsteady MHD Nanofluid Couette Flow Simulation - Transient Analysis",
   "private": true,
   "dependencies": {
-    "@supabase/supabase-js": "^2.89.0",
     "framer-motion": "^10.16.4",
+    "katex": "^0.16.11",
     "lucide-react": "^0.294.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
