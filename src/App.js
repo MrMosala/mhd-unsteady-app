@@ -1586,7 +1586,7 @@ function App() {
     <div className="section">
       <div className="section-header">
         <h2><Clock size={28} /> Transient simulation</h2>
-        <p>Watch the flow start from rest and relax to steady state. Press Play to advance dimensionless time τ; the readout below the controls shows the current τ. Defaults are the manuscript (MMNSA) baseline (Cu-Water, φ=0.05, Ha=2, Re=5, λ=0.1, G=1, Bi=0.5, Ec=0.01). Open the sliders (gear, lower right) to change parameters; the live plots show velocity, temperature, skin friction, Nusselt number, entropy generation, and the Bejan number.</p>
+        <p>Watch the flow start from rest and relax to steady state. Press Play to advance dimensionless time τ; the readout below the controls shows the current τ. Defaults are the published paper (MMNSA) baseline (Cu-Water, φ=0.05, Ha=2, Re=5, λ=0.1, G=1, Bi=0.5, Ec=0.01). Open the sliders (gear, lower right) to change parameters; the live plots show velocity, temperature, skin friction, Nusselt number, entropy generation, and the Bejan number.</p>
       </div>
       <PhysicsInfoBox topic="transient" />
       <ResultsPanel />
@@ -2039,14 +2039,14 @@ function App() {
   const renderValidation = () => (
     <div className="section">
       <div className="section-header">
-        <h2><Award size={28} /> Validation against Manuscript (MMNSA)</h2>
-        <p>Every number below is produced live by this app's own solver and compared to the manuscript. Nothing here is hard coded. Method: implicit finite-difference (Crank-Nicolson-type, tridiagonal) time marching to steady state; tolerance 1e-3 on the maximum absolute velocity error.</p>
+        <h2><Award size={28} /> Validation against the Published Paper (MMNSA)</h2>
+        <p>Every number below is produced live by this app's own solver and compared to the published paper. Nothing here is hard coded. Method: implicit finite-difference (Crank-Nicolson-type, tridiagonal) time marching to steady state; tolerance 1e-3 on the maximum absolute velocity error.</p>
       </div>
 
       <div className="chart-card" style={{ marginBottom: 'var(--space-lg)' }}>
         <div className="chart-header"><span className="dot teal"></span><h3>Check 1: transient solver vs closed-form steady solution</h3></div>
         <p className="figure-discussion" style={{ margin: '0 0 8px' }}>
-          Cu-Water, φ=0.10, Ha=0.1, G=1, Re=0.1, λ=0.1. The app solver runs to large τ and is compared with the analytic steady solution (manuscript exact-solution equation). Measured maximum absolute error: <strong>{exactValidation.maxErr.toExponential(2)}</strong>. Manuscript value: 3.49e-4 (Crank-Nicolson). Tolerance 1e-3, so this check is <strong>{exactValidation.maxErr < 1e-3 ? 'PASS' : 'FAIL'}</strong>.
+          Cu-Water, φ=0.10, Ha=0.1, G=1, Re=0.1, λ=0.1. The app solver runs to large τ and is compared with the analytic steady solution (published-paper exact-solution equation). Measured maximum absolute error: <strong>{exactValidation.maxErr.toExponential(2)}</strong>. Published-paper value: 3.49e-4 (Crank-Nicolson). Tolerance 1e-3, so this check is <strong>{exactValidation.maxErr < 1e-3 ? 'PASS' : 'FAIL'}</strong>.
         </p>
         <div className="chart-wrapper" style={{ height: 320 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -2063,7 +2063,7 @@ function App() {
       </div>
 
       <div className="chart-card">
-        <div className="chart-header"><span className="dot amber"></span><h3>Check 2: exact-solution benchmark table (Manuscript, MMNSA)</h3></div>
+        <div className="chart-header"><span className="dot amber"></span><h3>Check 2: exact-solution benchmark table (Published paper, MMNSA)</h3></div>
         <p className="figure-discussion" style={{ margin: '0 0 8px' }}>
           Cu-Water, φ=0.10, Ha=0.1, G=1, Re=0.1, λ=0.1. Paper W(η) exact column vs the live app solver at six gap locations. PASS if the per-node error is below the {exactValidation.tol.toExponential(0)} tolerance.
         </p>
@@ -2086,7 +2086,7 @@ function App() {
           </table>
         </div>
         <div className="highlight purple" style={{ marginTop: '8px' }}>
-          Source: manuscript (MMNSA) exact-solution validation table. The app uses finite difference (implicit tridiagonal); the manuscript uses Crank-Nicolson and BI-SQLM. Agreement at spectral-comparable accuracy confirms reproduction.
+          Source: published paper (MMNSA) exact-solution validation table. The app uses finite difference (implicit tridiagonal); the published paper uses Crank-Nicolson and BI-SQLM. Agreement at spectral-comparable accuracy confirms reproduction.
         </div>
       </div>
     </div>
@@ -2095,14 +2095,14 @@ function App() {
   const renderFigures = () => (
     <div className="section">
       <div className="section-header">
-        <h2><Image size={28} /> Manuscript (MMNSA)</h2>
-        <p>The published figures from the manuscript, each with the key finding. Live reproduction and error checks are in the Validation tab.</p>
+        <h2><Image size={28} /> Published paper (MMNSA)</h2>
+        <p>The published figures from the paper, each with the key finding. Live reproduction and error checks are in the Validation tab.</p>
       </div>
       <div className="figures-grid">
         {paperFigures.map((fig) => (
           <div key={fig.id} className="figure-card">
             <div className="figure-image">
-              <img src={fig.file} alt={`Manuscript (MMNSA) Figure ${fig.id}: ${fig.title}`} loading="lazy" style={{ width: '100%', height: 'auto', display: 'block', background: '#fff', borderRadius: '8px' }} />
+              <img src={fig.file} alt={`Published paper (MMNSA) Figure ${fig.id}: ${fig.title}`} loading="lazy" style={{ width: '100%', height: 'auto', display: 'block', background: '#fff', borderRadius: '8px' }} />
             </div>
             <div className="figure-content">
               <h3><span className="figure-number">Figure {fig.id}</span>{fig.title}</h3>
@@ -2123,10 +2123,20 @@ function App() {
         is stationary at ambient temperature; the upper plate moves at speed U
         with Navier slip and convective (Robin) heat exchange. A uniform
         transverse magnetic field B₀ is applied. Every equation below matches the
-        manuscript (MMNSA) exactly (Eqs. 8 to 13 and the nondimensionalisation).</p>
-        <a className="pdf-download-btn" href="/MMNSA-D-26-00050.pdf" target="_blank" rel="noopener noreferrer">
-          <Download size={16} /> Download the accepted manuscript (MMNSA-D-26-00050)
+        published paper (MMNSA) exactly (Eqs. 8 to 13 and the nondimensionalisation).</p>
+        <a className="pdf-download-btn" href="/MHD-Unsteady-Couette-MMNSA-published.pdf" target="_blank" rel="noopener noreferrer">
+          <Download size={16} /> Download the published paper (MMNSA)
         </a>
+        <p className="doi-line">
+          Version of record (open access):{' '}
+          <a href="https://doi.org/10.53391/2791-8564.1033" target="_blank" rel="noopener noreferrer">https://doi.org/10.53391/2791-8564.1033</a>
+        </p>
+        <p className="cite-line">
+          <strong>How to cite:</strong> Mosala, S. I., Makinde, O. D., and Muronga, A. (2026).
+          Thermo-entropic analysis of unsteady MHD nanofluid Couette flow: A classical spectral
+          approach with an exploratory quantum linear-solver application. Mathematical Modelling and
+          Numerical Simulation with Applications, 6(3), Article 1. https://doi.org/10.53391/2791-8564.1033
+        </p>
       </div>
       <div className="theory-grid">
         <div className="theory-card full"><h3><Activity size={20} /> Dimensional Governing Equations</h3><div className="equation"><TeX block math={String.raw`\rho_{nf}\,\frac{\partial u}{\partial t} = -\frac{\partial P}{\partial x} + \mu_{nf}\,\frac{\partial^2 u}{\partial y^2} - \sigma_{nf}\,B_0^2\,u`} /><TeX block math={String.raw`(\rho C_p)_{nf}\,\frac{\partial T}{\partial t} = k_{nf}\,\frac{\partial^2 T}{\partial y^2} + \mu_{nf}\left(\frac{\partial u}{\partial y}\right)^2 + \sigma_{nf}\,B_0^2\,u^2`} /></div><p>Dimensional momentum and energy balances for the electrically conducting nanofluid between the plates: inertia, pressure gradient, viscous diffusion and the Lorentz force in momentum; and thermal inertia, conduction, viscous dissipation and Joule heating in energy. Here u is velocity, T temperature, t time, y the transverse coordinate, P pressure and B₀ the applied field.</p></div>
@@ -2165,7 +2175,7 @@ function App() {
     { m: 'Gate count', hhl: '371', vqls: '8', src: 'Final_Code', paper: 'MMNSA: 371 / 8' },
     { m: 'Optimiser iterations', hhl: 'N/A', vqls: '168', src: 'Final_Code Phase5_Table2', paper: 'MMNSA: 168' },
     { m: 'NISQ hardware feasible', hhl: 'No', vqls: 'Yes', src: 'Final_Code Phase5_Table3', paper: 'MMNSA: No / Yes' },
-    { m: 'Post-selection rate', hhl: '79.1%', vqls: 'N/A', src: 'Manuscript (reported)', paper: 'MMNSA: 79.1%' },
+    { m: 'Post-selection rate', hhl: '79.1%', vqls: 'N/A', src: 'Published paper (reported)', paper: 'MMNSA: 79.1%' },
   ];
   const quantumDomain = [
     { eta: 0.25, exact: 0.103364, hhl: 1.13, vqls: 0.036 },
@@ -2178,7 +2188,7 @@ function App() {
     <div className="section">
       <div className="section-header">
         <h2><Cpu size={28} /> Quantum linear solvers: HHL and VQLS</h2>
-        <p>Every number on this tab is quoted from the project code in Final_Code or from the manuscript (MMNSA) and is marked as reported, not recomputed in the browser. Both solvers run on the Qiskit Aer statevector simulator, not real quantum hardware.</p>
+        <p>Every number on this tab is quoted from the project code in Final_Code or from the published paper (MMNSA) and is marked as reported, not recomputed in the browser. Both solvers run on the Qiskit Aer statevector simulator, not real quantum hardware.</p>
       </div>
 
       <div className="dual-grid">
@@ -2209,9 +2219,9 @@ function App() {
             </tbody>
           </table>
         </div>
-        <div className="highlight purple" style={{ marginTop: '8px' }}>VQLS reaches a 58x smaller relative error than HHL (0.414% vs 0.0072%) with an 8625x shallower transpiled circuit (43,127 vs 5 gates). The VQLS residual differs slightly between sources (Final_Code 2.28e-4 vs manuscript 1.65e-4) because VQLS is a stochastic variational optimiser and each run converges to a slightly different point.</div>
-        <div className="highlight teal" style={{ marginTop: '8px' }}>Why VQLS is NISQ-feasible and HHL is not: VQLS needs only 2 qubits and a transpiled depth of 5 gates, well within current device coherence, whereas the HHL circuit for the same system needs 11 qubits and depth 43,127, far beyond it. That is why the manuscript identifies VQLS as the near-term option.</div>
-        <div className="highlight amber" style={{ marginTop: '8px' }}>Projected (not measured) scaling: the Final_Code complexity table (Phase4) is computed up to n=128; the manuscript extrapolates HHL's advantage over the classical direct solver to roughly 18,000x at n=1024, and about 2.3x over the classical conjugate-gradient method at the same size. These two figures are projected asymptotic estimates, not measured runs.</div>
+        <div className="highlight purple" style={{ marginTop: '8px' }}>VQLS reaches a 58x smaller relative error than HHL (0.414% vs 0.0072%) with an 8625x shallower transpiled circuit (43,127 vs 5 gates). The VQLS residual differs slightly between sources (Final_Code 2.28e-4 vs published paper 1.65e-4) because VQLS is a stochastic variational optimiser and each run converges to a slightly different point.</div>
+        <div className="highlight teal" style={{ marginTop: '8px' }}>Why VQLS is NISQ-feasible and HHL is not: VQLS needs only 2 qubits and a transpiled depth of 5 gates, well within current device coherence, whereas the HHL circuit for the same system needs 11 qubits and depth 43,127, far beyond it. That is why the published paper identifies VQLS as the near-term option.</div>
+        <div className="highlight amber" style={{ marginTop: '8px' }}>Projected (not measured) scaling: the Final_Code complexity table (Phase4) is computed up to n=128; the published paper extrapolates HHL's advantage over the classical direct solver to roughly 18,000x at n=1024, and about 2.3x over the classical conjugate-gradient method at the same size. These two figures are projected asymptotic estimates, not measured runs.</div>
       </div>
 
       <div className="chart-card">
@@ -2249,7 +2259,7 @@ function App() {
             </tbody>
           </table>
         </div>
-        <div className="highlight purple" style={{ marginTop: '8px' }}>HHL maximum error 2.84%, VQLS maximum error 0.036% (Final_Code). The manuscript (MMNSA) reports VQLS maximum 0.032%; the small difference is run-to-run variation of the stochastic variational optimiser. HHL errors match the manuscript exactly because HHL is deterministic with a fixed seed. Backend: Qiskit Aer statevector simulator (not hardware).</div>
+        <div className="highlight purple" style={{ marginTop: '8px' }}>HHL maximum error 2.84%, VQLS maximum error 0.036% (Final_Code). The published paper (MMNSA) reports VQLS maximum 0.032%; the small difference is run-to-run variation of the stochastic variational optimiser. HHL errors match the published paper exactly because HHL is deterministic with a fixed seed. Backend: Qiskit Aer statevector simulator (not hardware).</div>
       </div>
     </div>
   );

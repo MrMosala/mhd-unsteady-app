@@ -39,7 +39,7 @@ Biot number Bi, slip parameter lambda, pressure gradient G, and volume fraction 
 | Energy | Kinetic and thermal energy, viscous and Joule dissipation, and the entropy split |
 | Validation | Live reproduction of the manuscript exact-solution benchmark with measured error and PASS or FAIL |
 | Figures | The published manuscript figures with the key finding of each |
-| Theory | Dimensional and dimensionless equations, scaling variables, property models, entropy and Bejan analysis (rendered with KaTeX), and a link to the accepted paper |
+| Theory | Dimensional and dimensionless equations, scaling variables, property models, entropy and Bejan analysis (rendered with KaTeX), and a link to the published paper |
 | Quantum | HHL and VQLS results for the discretised linear system, sourced from the manuscript and the project code |
 
 ## How it computes, and an honest note on methods

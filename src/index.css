@@ -2440,3 +2440,28 @@ video::-webkit-media-controls-timeline {
   color: var(--text-secondary, #c9d1d9);
   white-space: nowrap;
 }
+
+/* Theory tab: DOI and citation lines (published paper) */
+.doi-line {
+  margin: 10px 0 2px;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #c9d1d9);
+}
+.doi-line a,
+.cite-line a {
+  color: var(--accent-purple);
+  text-decoration: none;
+  word-break: break-word;
+}
+.doi-line a:hover,
+.cite-line a:hover { text-decoration: underline; }
+.cite-line {
+  margin: 6px 0 0;
+  padding: 10px 14px;
+  background: var(--bg-tertiary);
+  border-left: 3px solid var(--accent-purple);
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-secondary, #c9d1d9);
+}
